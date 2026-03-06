@@ -1,8 +1,10 @@
-import sys
+from pathlib import Path
+from sys import path as sys_path
 
-src_directory = "../src/"
-
-sys.path.append(src_directory)
+src_directory = (
+    Path("./src/").absolute() if Path("./src/").exists() else Path("../src/").absolute()
+)
+sys_path.append(str(src_directory))
 
 import torch.nn as tnn
 
@@ -29,9 +31,7 @@ class TestComputShape:
         checker_height = compute_conv(
             shape.height, padding[0], kernel_size[0], stride[0]
         )
-        checker_width = compute_conv(
-            shape.width, padding[1], kernel_size[1], stride[1]
-        )
+        checker_width = compute_conv(shape.width, padding[1], kernel_size[1], stride[1])
         checker = TensorShape(checker_height, checker_width, 64)
 
         assert result == checker
@@ -71,9 +71,7 @@ class TestComputShape:
         checker_height = compute_conv(
             shape.height, padding[0], kernel_size[0], stride[0]
         )
-        checker_width = compute_conv(
-            shape.width, padding[1], kernel_size[1], stride[1]
-        )
+        checker_width = compute_conv(shape.width, padding[1], kernel_size[1], stride[1])
         checker = TensorShape(checker_height, checker_width, 3)
 
         assert result == checker

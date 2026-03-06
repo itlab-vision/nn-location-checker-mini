@@ -4,7 +4,7 @@ from pathlib import Path
 import torch.nn as tnn
 
 from classifier import Classifier
-from convolution import Convolution, TensorShape
+from utils import TensorShape
 
 
 def _build_conv2d(dct: dict[str, str | int | bool | tuple[int, int] | float]):
@@ -198,11 +198,8 @@ class ModuleLoader:
         for record in data:  # pyright: ignore[reportUnknownVariableType]
             self._modules.append(record)  # pyright: ignore[reportUnknownArgumentType]
 
-    def load(self, input_shape: TensorShape):
-        result: Convolution | Classifier | None = None
-        try:
-            result = Convolution(self._modules, input_shape)
-        except ValueError:
-            result = Classifier(self._modules, input_shape)
+    def load(self, input_shape: TensorShape) -> Classifier:
+        result: Classifier | None = None
+        result = Classifier(self._modules, input_shape)
 
         return result

@@ -4,7 +4,7 @@ from typing import Self
 
 import torch.nn as tnn
 
-from convolution import TensorShape
+from utils import TensorShape
 
 
 class Classifier:
@@ -49,7 +49,7 @@ class Classifier:
 
     @singledispatch
     def extend(self, arg: Iterable[tnn.Module] | Self) -> None:
-        if isinstance(arg, "Classifier"):
+        if isinstance(arg, self.__class__):
             for module in arg._modules:
                 self.append(module)
         else:

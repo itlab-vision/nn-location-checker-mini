@@ -1,31 +1,21 @@
-from pprint import pprint
-from typing import override
+from pathlib import Path
+from sys import path as sys_path
+
+src_directory = (
+    Path("./src/").absolute() if Path("./src/").exists() else Path("../src/").absolute()
+)
+sys_path.append(str(src_directory))
 
 import torch
 import torch.nn as tnn
-import torchvision  # pyright: ignore[reportMissingTypeStubs]
 import torchvision.transforms.v2 as tt2  # pyright: ignore[reportMissingTypeStubs]
 from torch.utils.data import DataLoader
 
-from classifier import Classifier
-from convolution import Convolution, TensorShape
+from build_cnn import CNnetwork
 from dataset import Dataset
 from json_loader import ModuleLoader
-
-
-class ConvolutionalNeuralNetwork(tnn.Module):
-    def __init__(self, convolution: Convolution, classifier: Classifier):
-        super().__init__()
-
-        self.convolution = convolution.sequential()
-        self.classifier = classifier.sequential()
-
-    @override
-    def forward(self, x: torch.Tensor):
-        x = self.convolution(x)
-        x = torch.flatten(x, 1)
-        x = self.classifier(x)
-        return x
+from model_segment import ModelSegment, SupportedModels
+from utils import TensorShape
 
 
 def main():
@@ -37,27 +27,18 @@ def main():
         True,
     )
 
-    # print(len(loader))
-
-    alexnet_convolution_loader = ModuleLoader(
-        "./json_modules/alexnet_convolutions.json"
-    )
     alexnet_classifier_loader = ModuleLoader("./json_modules/alexnet_classifier.json")
 
-    alexnet_convolution = alexnet_convolution_loader.load(TensorShape(227, 227, 3))
+    alexnet_part = ModelSegment(SupportedModels.ALEXNET, 2)
 
-    if not isinstance(alexnet_convolution, Convolution):
-        raise RuntimeError("Wrong type")
+    if isinstance(out := alexnet_part.compute_shape(TensorShape(3, 227, 227)), int):
+        raise ValueError("Must be TensorShape")
+    else:
+        output = out
 
-    alexnet_classifier = alexnet_classifier_loader.load(alexnet_convolution.out_shape)
+    alexnet_classifier = alexnet_classifier_loader.load(output)
 
-    if not isinstance(alexnet_classifier, Classifier):
-        raise RuntimeError("Wrong type")
-
-    # print(alexnet_convolution.out_shape)
-    # print(alexnet_classifier.out_features)
-
-    cnn_model = ConvolutionalNeuralNetwork(alexnet_convolution, alexnet_classifier)
+    cnn_model = CNnetwork(alexnet_part, alexnet_classifier)
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     cnn_model = cnn_model.to(device)
 
