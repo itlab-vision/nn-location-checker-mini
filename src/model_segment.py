@@ -49,7 +49,6 @@ class ModelSegment(tnn.Module):
         result_shape: TensorShape | int = 0 if input_shape is None else input_shape
 
         for module in self._convolution_layers + self._classifier_layers:
-            print(module.__class__)
             if isinstance(module, tnn.Linear):
                 result_shape = module.out_features
             else:
