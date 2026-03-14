@@ -45,6 +45,9 @@ pydocstyle.convention = "google"
   "S101",   # assert for tests
   "ANN201", # tests don't need annotations
 ]
+"samples/main.py" = [
+  "G004" # f-strings can't harm anything there
+]
 
 [tool.basedpyright]
 include = ["src", "samples"]

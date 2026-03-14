@@ -32,7 +32,7 @@ def train(
     model: ClassificationNetwork,
 ) -> None:
     for epoch in range(epochs):
-        logger.info("Epoch number %i starts", epoch)
+        logger.info(f"Epoch number {epoch} starts")
         for _, (images, labels) in enumerate(loader):  # pyright: ignore[reportAny]
             images = images.requires_grad_().to(device)  # pyright: ignore[reportAny]
             labels = labels.to(device)  # pyright: ignore[reportAny]
@@ -43,9 +43,9 @@ def train(
             loss.backward()  # pyright: ignore[reportAny]
             _ = optimizer.step()  # pyright: ignore[reportUnknownMemberType]
         accuracy, _ = get_accuracy(loader, model, device)
-        logger.info("Epoch number %i ends", epoch)
-        logger.info("Epoch accuracy: %f", accuracy)
-        logger.info("Epoch loss: %f", loss.item())
+        logger.info(f"Epoch number {epoch} ends")
+        logger.info(f"Epoch accuracy: {accuracy}")
+        logger.info(f"Epoch loss: {loss.item()}")
 
 
 def main() -> None:
@@ -73,7 +73,7 @@ def main() -> None:
 
     model_summary = summary(classification_model, verbose=0, depth=5, col_names=[])
 
-    logger.info("\n%s", format_torchsummary(str(model_summary)))
+    logger.info(f"\n{format_torchsummary(str(model_summary))}")
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     classification_model = classification_model.to(device)
@@ -83,13 +83,13 @@ def main() -> None:
     optimizer = torch.optim.SGD(classification_model.parameters(), lr=learning_rate)
     num_epochs = 2
 
-    logger.info("Batch size: %i", batch_size)
-    logger.info("Number of batches: %i", len(training_loader))
-    logger.info("Device: %s", device)
-    logger.info("Learning rate %.4f", learning_rate)
-    logger.info("Number of epochs: %i", num_epochs)
-    logger.info("Loss function: %s", loss_function.__class__.__name__)
-    logger.info("Optimizer: %s", optimizer.__class__.__name__)
+    logger.info(f"Batch size: {batch_size}")
+    logger.info(f"Number of batches: {len(training_loader)}")
+    logger.info(f"Device: {device}")
+    logger.info(f"Learning rate {learning_rate:.4f}")
+    logger.info(f"Number of epochs: {num_epochs}")
+    logger.info(f"Loss function: {loss_function.__class__.__name__}")
+    logger.info(f"Optimizer: {optimizer.__class__.__name__}")
 
     logger.info("Start of training")
     train(
@@ -106,9 +106,9 @@ def main() -> None:
     accuracy, avg_time_per_image = get_accuracy(
         test_loader, classification_model, device
     )
-    logger.info("Testing accuracy: %.4f", accuracy)
-    logger.info("Average time per image: %.4f ms", avg_time_per_image)
-    logger.info("Classification speed: %.4f images/s", 1 / avg_time_per_image)
+    logger.info(f"Testing accuracy: {accuracy:.4f}")
+    logger.info(f"Average time per image: {avg_time_per_image:.4f} ms")
+    logger.info(f"Classification speed: {1 / avg_time_per_image:.4f} images/s")
     logger.info("End of testing")
 
 
