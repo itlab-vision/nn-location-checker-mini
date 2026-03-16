@@ -31,6 +31,11 @@ def train(loader: DataLoader, device: torch.device, config: TrainingConfig) -> N
             outputs = config.network(images)
             loss = config.loss_function(outputs, labels)
 
+            if torch.isnan(loss):
+                message = "NaN loss detected, skipping batch"
+                logger.critical(message)
+                raise RuntimeError(message)
+
             config.optimizer.zero_grad()
             loss.backward()
             _ = config.optimizer.step()
