@@ -35,15 +35,47 @@ def _to_pair(obj: int | tuple[int, int] | tuple[int | None, int | None] | None):
             return obj
 
 
+@overload
+def compute_shape(module: tnn.Conv2d, previous_shape: TensorShape) -> TensorShape: ...
+
+
+@overload
+def compute_shape(
+    _module: tnn.ReLU | tnn.Dropout | tnn.BatchNorm2d, previous_shape: TensorShape
+) -> TensorShape: ...
+
+
+@overload
+def compute_shape(
+    module: tnn.MaxPool2d, previous_shape: TensorShape
+) -> TensorShape: ...
+
+
+@overload
+def compute_shape(
+    module: tnn.AdaptiveAvgPool2d | tnn.AdaptiveMaxPool2d, previous_shape: TensorShape
+) -> TensorShape: ...
+
+
+@overload
+def compute_shape(
+    module: tnn.Sequential, previous_shape: TensorShape
+) -> TensorShape: ...
+
+
+@overload
+def compute_shape(module: tnn.Module, previous_shape: TensorShape) -> Never: ...
+
+
 @singledispatch
-def compute_shape(module: tnn.Module, previous_shape: TensorShape) -> TensorShape:  # pyright: ignore[reportUnusedParameter]
+def compute_shape(module: tnn.Module, previous_shape: TensorShape) -> Never:
     raise NotImplementedError(
         f"Cannot compute features map for the module: {type(module).__name__}"
     )
 
 
 def compute_conv(origin: int, padding: int, kernel_size: int, stride: int) -> int:
-    return int((origin + 2 * padding - (kernel_size - 1) - 1) / stride + 1)
+    return (origin + 2 * padding - (kernel_size - 1) - 1) // stride + 1
 
 
 @compute_shape.register
