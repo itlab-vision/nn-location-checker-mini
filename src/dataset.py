@@ -1,7 +1,7 @@
 from enum import Enum
 from os import PathLike
 from pathlib import Path
-from typing import Self, overload, override
+from typing import Self, override
 
 import torch
 import torchvision.transforms.v2 as tt2  # pyright: ignore[reportMissingTypeStubs]
@@ -49,16 +49,8 @@ class Dataset(BaseDataset[tuple[torch.Tensor, int]]):
     def __len__(self) -> int:
         return len(self._pool)
 
-    @overload
-    def __getitem__(self, idx: int) -> tuple[torch.Tensor, int]: ...
-
-    @overload
-    def __getitem__(self, idx: slice) -> list[tuple[torch.Tensor, int]]: ...
-
     @override
-    def __getitem__(
-        self, idx: int | slice
-    ) -> tuple[torch.Tensor, int] | list[tuple[torch.Tensor, int]]:
+    def __getitem__(self, index: int) -> tuple[torch.Tensor, int]:
         def load_image(image_path: Path) -> torch.Tensor:
             image = decode_image(str(image_path), apply_exif_orientation=True)
 
@@ -70,20 +62,11 @@ class Dataset(BaseDataset[tuple[torch.Tensor, int]]):
 
             return image.float()
 
-        if isinstance(idx, int):
-            image_path, label = self._pool[idx]
+        image_path, label = self._pool[index]
 
-            image = load_image(image_path)
+        image = load_image(image_path)
 
-            return image, label.value
-        pool_slice = self._pool[idx]
-
-        result_slice: list[tuple[torch.Tensor, int]] = []
-        for image_path, label in pool_slice:
-            image = load_image(image_path)
-            result_slice.append((image, label.value))
-
-        return result_slice
+        return image, label.value
 
     def __iter__(self) -> Self:
         self._pool_idx = -1
