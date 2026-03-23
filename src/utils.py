@@ -69,15 +69,15 @@ def compute_shape(
 def compute_shape(module: tnn.Module, previous_shape: TensorShape) -> Never: ...
 
 
+def compute_conv(origin: int, padding: int, kernel_size: int, stride: int) -> int:
+    return (origin + 2 * padding - (kernel_size - 1) - 1) // stride + 1
+
+
 @singledispatch
 def compute_shape(module: tnn.Module, previous_shape: TensorShape) -> Never:
     raise NotImplementedError(
         f"Cannot compute features map for the module: {type(module).__name__}"
     )
-
-
-def compute_conv(origin: int, padding: int, kernel_size: int, stride: int) -> int:
-    return (origin + 2 * padding - (kernel_size - 1) - 1) // stride + 1
 
 
 @compute_shape.register
