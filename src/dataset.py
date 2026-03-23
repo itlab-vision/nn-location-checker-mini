@@ -1,3 +1,26 @@
+"""Landmark image dataset and class label definitions.
+
+This module provides `Marker`, an enum of landmark classes, and `Dataset`,
+a `torch.utils.data.Dataset` implementation that loads images from a
+directory structure where each subdirectory represents a class.
+
+Expected directory structure::
+
+    images/
+        00_OTHER/
+            img1.jpg
+            img2.jpg
+        01_KREMLIN/
+            img1.jpg
+        ...
+
+Intended usage::
+
+    transform = tt2.Compose([tt2.Resize((227, 227)), tt2.ToTensor()])
+    dataset = Dataset("images/", transform=transform)
+    loader = DataLoader(dataset, batch_size=32, shuffle=True)
+"""
+
 from enum import Enum
 from os import PathLike
 from pathlib import Path
