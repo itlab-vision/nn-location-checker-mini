@@ -1,3 +1,10 @@
+"""Tensor shape and computation for PyTorch modules.
+
+This module provides `TensorShape` for representing tensor
+dimensions and `compute_shape` for passing shapes through
+`torch.nn.Module` layers without running a forward pass.
+"""
+
 from functools import singledispatch
 from typing import NamedTuple, Never, overload
 
