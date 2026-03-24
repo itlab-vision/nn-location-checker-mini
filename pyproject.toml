@@ -56,3 +56,6 @@ extraPaths = ["src"]
 
 [tool.coverage.report]
 exclude_lines = ["raise NotImplementedError", "@overload"]
+
+[tool.pytest]
+tmp_path_retention_policy = "none"
