@@ -54,6 +54,14 @@ def create_argparser() -> argparse.ArgumentParser:
         default="experiment.log",
         help="Name of the log file with extension",
     )
+    _ = argparser.add_argument(
+        "-s",
+        "--size",
+        type=int,
+        nargs=2,
+        default=(500, 500),
+        help="Size of images",
+    )
 
     return argparser
 
@@ -64,7 +72,9 @@ def venv_exists() -> bool:
     return python.exists()
 
 
-def run(train_dataset: Path, test_dataset: Path, config: Path) -> Experiment:
+def run(
+    train_dataset: Path, test_dataset: Path, config: Path, target_shape: tuple[int, int]
+) -> Experiment:
     if not venv_exists():
         raise RuntimeError("Create venv")
 
@@ -80,6 +90,9 @@ def run(train_dataset: Path, test_dataset: Path, config: Path) -> Experiment:
             str(test_dataset),
             "-c",
             str(config),
+            "-s",
+            str(target_shape[0]),
+            str(target_shape[1]),
         ],
         stderr=asyncio.subprocess.PIPE,
         text=True,
@@ -96,8 +109,9 @@ def main(arguments: argparse.Namespace) -> None:
     train_dataset = arguments.train_dataset
     test_dataset = arguments.test_dataset or arguments.train_dataset
     config = arguments.config
+    target_shape = arguments.size
 
-    experiment = run(train_dataset, test_dataset, config)
+    experiment = run(train_dataset, test_dataset, config, target_shape)
     try:
         with ExperimentCSVHandler(arguments.output) as output:
             output.writerow(experiment)

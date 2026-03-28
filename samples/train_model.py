@@ -54,6 +54,14 @@ def create_argparser() -> argparse.ArgumentParser:
         default="train.log",
         help="Name of the log file with extension",
     )
+    _ = argparser.add_argument(
+        "-s",
+        "--size",
+        type=int,
+        nargs=2,
+        default=(500, 500),
+        help="Size of images",
+    )
 
     return argparser
 
@@ -74,8 +82,9 @@ def format_torchsummary(summary: str) -> str:
     return "\n".join(lines[3:end])
 
 
-def main(train_dataset: Path, test_dataset: Path, config: Path) -> None:
-    target_shape = (227, 227)
+def main(
+    train_dataset: Path, test_dataset: Path, config: Path, target_shape: tuple[int, int]
+) -> None:
     input_transform = tt2.Compose([tt2.Resize(target_shape)])
     cfg = load_config(config, TensorShape(*target_shape, 3))
     train_loader, test_loader = setup_dataloaders(
@@ -124,4 +133,5 @@ if __name__ == "__main__":
     train_dataset = arguments.train_dataset
     test_dataset = arguments.test_dataset or arguments.train_dataset
     config = arguments.config
-    main(train_dataset, test_dataset, config)
+    target_shape = arguments.size
+    main(train_dataset, test_dataset, config, target_shape)
