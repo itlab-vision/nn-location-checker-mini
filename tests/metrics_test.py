@@ -46,6 +46,10 @@ def test_avg_time_per_image(time_metrics: TimeMetrics):
     )
 
 
+def test_fps(time_metrics: TimeMetrics):
+    assert time_metrics.fps() == time_metrics.images / time_metrics.total_time
+
+
 def test_macro_f1_perfect(perfect_metrics: QualityMetrics):
     assert perfect_metrics.f1_score() == pytest.approx(1.0)
 

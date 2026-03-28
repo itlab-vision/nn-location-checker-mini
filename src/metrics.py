@@ -94,4 +94,7 @@ class TimeMetrics:
     ALL_LABELS: ClassVar[list[int]] = [label.value for label in Marker]
 
     def avg_time_per_image(self) -> float:
-        return float(self.total_time / self.images)
+        return self.total_time / self.images
+
+    def fps(self) -> float:
+        return self.images / self.total_time

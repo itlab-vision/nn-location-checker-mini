@@ -123,9 +123,7 @@ def main(
     logger.info(f"Macro f1 per class: {f1_scores}")
     logger.info(f"Macro f1: {quality_metrics.f1_score():.4f}")
     logger.info(f"Average time per image: {time_metrics.avg_time_per_image():.4f} s")
-    logger.info(
-        f"Classification speed: {1 / time_metrics.avg_time_per_image():.4f} images/s"
-    )
+    logger.info(f"Classification speed: {time_metrics.fps():.4f} images/s")
     logger.info("End of testing")
 
 
