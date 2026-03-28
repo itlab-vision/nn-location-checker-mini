@@ -80,8 +80,14 @@ def main(arguments: argparse.Namespace) -> None:
     config = arguments.config
 
     experiment = run(train_dataset, test_dataset, config)
-    with ExperimentCSVHandler(arguments.output) as output:
-        output.writerow(experiment)
+    try:
+        with ExperimentCSVHandler(arguments.output) as output:
+            output.writerow(experiment)
+    except Exception as e:  # noqa: BLE001
+        print(f"Can't write experiment to {arguments.output}")
+        print(e)
+        print("Print experiment as dict in log-stream")
+        print(dict(experiment))
 
 
 if __name__ == "__main__":
