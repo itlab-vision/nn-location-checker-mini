@@ -1,0 +1,67 @@
+[project]
+name = "nn-location-checker-mini"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+  "matplotlib>=3.10.8",
+  "opencv-python>=4.13.0.92",
+  "scikit-learn>=1.8.0",
+  "torch>=2.10.0",
+  "torchinfo>=1.8.0",
+  "torchvision>=0.25.0",
+]
+
+[dependency-groups]
+dev = ["pytest>=9.0.2", "pytest-cov>=7.1.0"]
+
+[tool.ruff.lint]
+select = [
+  "N",   # pep8-naming
+  "UP",  # Modern syntax
+  "E",   # pycodestyle
+  "F",   # Pyflakes
+  "I",   # Import order (isort)
+  "LOG", # Logging
+  "G",   # Logging format
+  "B",   # Bugbear
+  "DTZ", # Datetime bugs
+  "SIM", # Simplify
+  "C4",  # Clarity
+  "RET", # Better returns
+  "PTH", # Prefer pathlib
+  "ANN", # Annotations checks
+  "ARG", # Arguments checks
+  "PT",  # Pytest style
+  "BLE", # No blind exceptions
+  "RUF", # Checks was inventend by ruff team
+] # "D" for docstrings. It's useless for current state
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"samples/*.py" = [
+  "E402", # Allow sys.path.append(...)
+]
+"tests/*.py" = [
+  "E402",   # Allow sys.path.append(...)
+  "S101",   # assert for tests
+  "ANN201", # tests don't need annotations
+]
+"samples/train_model.py" = [
+  "G004", # f-strings can't harm anything there
+]
+"samples/run_experiment.py" = [
+  "G004", # f-strings can't harm anything there
+]
+"src/classification_network.py" = [
+  "G004", # f-strings can't harm anything there
+]
+
+[tool.basedpyright]
+include = ["src", "samples"]
+extraPaths = ["src"]
+
+[tool.coverage.report]
+exclude_lines = ["raise NotImplementedError", "@overload", "if TYPE_CHECKING:"]
+
+[tool.pytest]
+tmp_path_retention_policy = "none"
