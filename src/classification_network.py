@@ -89,8 +89,8 @@ def test_model(
             _, predicted = probs.max(dim=1)
             all_predictions.append(predicted)
             all_labels.append(labels)
-    total_predictions = torch.cat(all_predictions).numpy().astype(np.int8)
-    total_labels = torch.cat(all_labels).numpy().astype(np.int8)
+    total_predictions = torch.cat(all_predictions).cpu().numpy().astype(np.int8)
+    total_labels = torch.cat(all_labels).cpu().numpy().astype(np.int8)
     return total_labels, total_predictions, total_time
 
 

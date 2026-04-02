@@ -1,6 +1,6 @@
 [macro_parameters]
 batch_size = 64
-epochs = 5
+epochs = 1
 
 [model]
 name = "densenet_121"
@@ -9,7 +9,7 @@ classifier = "../json_modules/alexnet_classifier.json"
 
 [optimizer]
 name = "SGD"
-learning_rate = 0.001
+learning_rate = 0.01
 
 [loss_function]
 name = "CrossEntropyLoss"
