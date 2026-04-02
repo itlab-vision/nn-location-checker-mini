@@ -66,18 +66,18 @@ def create_argparser() -> argparse.ArgumentParser:
     return argparser
 
 
-def venv_exists() -> bool:
-    project_root = Path(__file__).resolve().parents[1]
-    python_unix = project_root.joinpath(".venv/bin/python")
-    python_win = project_root.joinpath(".venv/Scripts/python.exe")
-    return python_unix.exists() or python_win.exists()
+# def venv_exists() -> bool:
+#     project_root = Path(__file__).resolve().parents[1]
+#     python_unix = project_root.joinpath(".venv/bin/python")
+#     python_win = project_root.joinpath(".venv/Scripts/python.exe")
+#     return python_unix.exists() or python_win.exists()
 
 
 def run(
     train_dataset: Path, test_dataset: Path, config: Path, target_shape: tuple[int, int]
 ) -> Experiment:
-    if not venv_exists():
-        raise RuntimeError("Create venv")
+    # if not venv_exists():
+    #     raise RuntimeError("Create venv")
 
     experiment = Experiment()
     training_script = Path(__file__).resolve().parents[0].joinpath("train_model.py")

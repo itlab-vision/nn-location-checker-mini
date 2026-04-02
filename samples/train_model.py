@@ -85,7 +85,11 @@ def format_torchsummary(summary: str) -> str:
 def main(
     train_dataset: Path, test_dataset: Path, config: Path, target_shape: tuple[int, int]
 ) -> None:
-    input_transform = tt2.Compose([tt2.Resize(target_shape)])
+    input_transform = tt2.Compose([
+        tt2.Resize(target_shape),
+        tt2.Lambda(lambda x: x[:3] if x.shape[0] == 4 else x),
+        tt2.ConvertImageDtype(torch.float32)
+    ])
     cfg = load_config(config, TensorShape(*target_shape, 3))
     train_loader, test_loader = setup_dataloaders(
         (train_dataset, test_dataset), cfg.batch_size, input_transform

@@ -29,34 +29,34 @@ from typing import override
 import torch
 import torchvision.transforms.v2 as tt2
 from torch.utils.data import Dataset as BaseDataset
-from torchvision.io import decode_image
+from torchvision.io import ImageReadMode, decode_image
 
 __all__ = ["Dataset", "Marker"]
 
 
 class Marker(Enum):
     OTHER = 0
-    KREMLIN = 1
+    NN_KREMLIN = 1
     CHKALOV_STAIRCASE = 2
     RUKAVISHNIKOV_ESTATE = 3
     ARHANGELSK_CATHEDRAL = 4
-    PECHERSKY_MONASTERY = 5
+    PECHERSKY_ASCENSION_MONASTERY = 5
     CHURCH_OF_THE_NATIVITY = 6
     STATE_BANK = 7
     PALACE_OF_LABOR = 8
-    CATHEDRAL_MOSQUE = 9
+    NN_CATHEDRAL_MOSQUE = 9
     ALEXANDER_NEVSKY_CATHEDRAL = 10
     SPASSKY_OLD_FAIR_CATHEDRAL = 11
-    FAIR = 12
-    ST_PETERSBURG_HERMITAGE = 13
+    NN_FAIR = 12
+    SPB_HERMITAGE = 13
     MOSCOW_KREMLIN = 14
-    NN_STATE_ACADEMIC_DRAMA_THEATER_GORKY = 15
+    NN_DRAMA_THEATER_GORKY = 15
     CHURCH_OF_THE_NATIVITY_WITH_THE_ROYAL_CHAPEL = 16
     MOSCOW_ST_BASILS_CATHEDRAL = 17
     MOSCOW_CATHEDRAL_OF_CHRIST_THE_SAVIOR = 18
-    ST_PETER_STISAACS_CATHEDRAL = 19
-    ST_PETER_RUSSIAN_MUSEUM = 20
-    ST_PETER_KAZAN_CATHEDRAL = 21
+    SPB_ST_ISAACS_CATHEDRAL = 19
+    SPB_RUSSIAN_MUSEUM = 20
+    SPB_KAZAN_CATHEDRAL = 21
 
 
 class Dataset(BaseDataset[tuple[torch.Tensor, int]]):
@@ -79,7 +79,9 @@ class Dataset(BaseDataset[tuple[torch.Tensor, int]]):
         return len(self._pool)
 
     def _load_image(self, image_path: Path) -> torch.Tensor:
-        image = decode_image(str(image_path), apply_exif_orientation=True)
+        image = decode_image(
+            str(image_path), ImageReadMode.RGB, apply_exif_orientation=True
+        )
 
         if self._transform is not None:
             image = self._transform(image)
