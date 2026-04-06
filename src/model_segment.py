@@ -60,7 +60,8 @@ class SupportedModels(Enum):
 
     def get_modules(self) -> list[tnn.Module]:
         constructor = getattr(models, self.value)
-        return list(constructor().children())
+        weights = models.get_model_weights(self.value)["DEFAULT"]
+        return list(constructor(weights=weights).children())
 
 
 class ModelSegment(tnn.Module):
