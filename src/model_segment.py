@@ -60,7 +60,8 @@ class SupportedModels(Enum):
 
     def get_modules(self) -> list[tnn.Module]:
         constructor = getattr(models, self.value)
-        return list(constructor().children())
+        weights = models.get_model_weights(self.value)["DEFAULT"]
+        return list(constructor(weights=weights).children())
 
 
 class ModelSegment(tnn.Module):
@@ -76,14 +77,15 @@ class ModelSegment(tnn.Module):
         for module in modules:
             self.append(module)
 
-    def compute_shape(
-        self, input_shape: TensorShape | None = None
-    ) -> TensorShape | int:
-        result_shape = 0 if input_shape is None else input_shape
-
+    def compute_shape(self, input_shape: TensorShape) -> TensorShape | int:
+        result_shape = input_shape
         for module in self.get_modules():
             if isinstance(module, tnn.Linear):
                 result_shape = module.out_features
+            elif isinstance(module, tnn.Sequential) and isinstance(
+                module[-1], tnn.Linear
+            ):
+                result_shape = module[-1].out_features
             else:
                 result_shape = compute_shape(module, result_shape)
 
@@ -102,7 +104,9 @@ class ModelSegment(tnn.Module):
         elif isinstance(module, tnn.Linear):
             self._classifier_layers.append(module)
         else:
-            self._convolution_layers.append(module)
+            self._convolution_layers.append(
+                module
+            )  # For the future: _DenseBlock & _Transition come here too
 
     def get_modules(self) -> tnn.Sequential:
         return self._convolution_layers + self._classifier_layers

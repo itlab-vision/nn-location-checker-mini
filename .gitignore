@@ -207,7 +207,8 @@ marimo/_lsp/
 __marimo__/
 
 # Especially for the project
-dataset/
+dataset_*
+dataset_*/
 logs/
 *.csv
 htmlcov/
