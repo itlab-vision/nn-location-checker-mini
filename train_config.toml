@@ -5,7 +5,7 @@ epochs = 2
 [model]
 name = "AlexNet"
 end = 2
-classifier = "./json_modules/alexnet_classifier.json"
+classifier = "./classifiers/alexnet_classifier.json"
 
 [optimizer]
 name = "SGD"
