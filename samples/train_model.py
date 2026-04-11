@@ -88,7 +88,7 @@ def main(
     input_transform = tt2.Compose([
         tt2.Resize(target_shape),
         tt2.Lambda(lambda x: x[:3] if x.shape[0] == 4 else x),
-        tt2.ConvertImageDtype(torch.float32)
+        tt2.ConvertImageDtype(torch.uint8)
     ])
     cfg = load_config(config, TensorShape(*target_shape, 3))
     train_loader, test_loader = setup_dataloaders(
@@ -100,6 +100,7 @@ def main(
     logger.info(f"Donor: {cfg.donor}")
     logger.info(f"Segment: {cfg.segment_start}:{cfg.segment_end}")
     logger.info(f"Classifier: {cfg.classifier}")
+    logger.info(f"Classifier name: {cfg.classifier_name}")
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     cfg.network = cfg.network.to(device)

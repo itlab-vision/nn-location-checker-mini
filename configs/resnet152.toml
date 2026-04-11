@@ -3,9 +3,9 @@ batch_size = 64
 epochs = 1
 
 [model]
-name = "densenet_121"
-end = 1
-classifier = "../json_modules/alexnet_classifier.json"
+name = "resnet_152"
+end = 8
+classifier = "../json_modules/default_classifier.json"
 
 [optimizer]
 name = "SGD"

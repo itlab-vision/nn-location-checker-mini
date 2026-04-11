@@ -3,8 +3,8 @@ batch_size = 64
 epochs = 1
 
 [model]
-name = "squeezenet_1_0"
-end = 13
+name = "resnet_101"
+end = 8
 classifier = "../json_modules/default_classifier.json"
 
 [optimizer]
