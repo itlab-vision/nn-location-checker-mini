@@ -1,0 +1,15 @@
+[macro_parameters]
+batch_size = 64
+epochs = 1
+
+[model]
+name = "shufflenet_v2_1_0"
+end = 6
+classifier = "../json_modules/default_classifier.json"
+
+[optimizer]
+name = "SGD"
+learning_rate = 0.01
+
+[loss_function]
+name = "CrossEntropyLoss"

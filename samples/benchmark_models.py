@@ -61,14 +61,10 @@ def is_valid_model_name(name: str) -> bool:
 def get_config_files(configs_folder: Path) -> list[Path]:
     """Return sorted list of .toml config files."""
     if not configs_folder.exists():
-        raise FileNotFoundError(
-            f"Configs folder {configs_folder} does not exist."
-        )
+        raise FileNotFoundError(f"Configs folder {configs_folder} does not exist.")
     config_files = sorted(configs_folder.glob("*.toml"))
     if not config_files:
-        raise FileNotFoundError(
-            f"No .toml files found in {configs_folder}"
-        )
+        raise FileNotFoundError(f"No .toml files found in {configs_folder}")
     return config_files
 
 
@@ -89,16 +85,7 @@ def run_experiment(
         "-lf", str(args.log_folder),
         "-s", str(args.size[0]), str(args.size[1]),
     ]
-    try:
-        subprocess.run(cmd, check=True, capture_output=False)
-    except subprocess.CalledProcessError as e:
-        logger.error(
-            "Experiment failed for %s with exit code %d",
-            config_path.name, e.returncode
-        )
-        raise RuntimeError(
-            f"Experiment {config_path.name} failed, check logs"
-        ) from e
+    subprocess.run(cmd, check=True, capture_output=False)
 
 
 def main() -> None:
@@ -106,9 +93,9 @@ def main() -> None:
     args = create_argparser().parse_args()
     config_files = get_config_files(args.configs_folder)
 
-    logger.info("Found %d config files:", len(config_files))
+    logger.info(f"Found {len(config_files)} config files:")
     for cfg in config_files:
-        logger.info("  %s", cfg.name)
+        logger.info(f"  {cfg.name}")
 
     output_csv = args.output
 
@@ -116,13 +103,17 @@ def main() -> None:
         model_name = cfg.stem
         if not is_valid_model_name(model_name):
             logger.warning(
-                "Model name '%s' not found in SupportedModels, continuing anyway.",
-                model_name
+                f"Model name '{model_name}' not found in SupportedModels, "
+                "continuing anyway."
             )
-        logger.info("\n=== Running experiment for %s ===", model_name)
-        run_experiment(cfg, args, output_csv)
+        logger.info(f"\n=== Running experiment for {model_name} ===")
+        try:
+            run_experiment(cfg, args, output_csv)
+        except Exception as e:
+            logger.error(f"Experiment {cfg.name} failed: {e}")
+            logger.info("Continuing with next config...")
 
-    logger.info("\nAll experiments finished. Results saved to %s", output_csv)
+    logger.info(f"\nAll experiments finished. Results saved to {output_csv}")
 
 
 if __name__ == "__main__":

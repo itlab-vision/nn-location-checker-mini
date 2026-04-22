@@ -234,7 +234,7 @@ def plot_metrics(
         plt.show()
     else:
         plt.close()
-    logger.info("Plots saved to %s", output_path)
+    logger.info(f"Plots saved to {output_path}")
 
 
 def main() -> None:
