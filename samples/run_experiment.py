@@ -54,6 +54,13 @@ def create_argparser() -> argparse.ArgumentParser:
         default="experiment.log",
         help="Name of the log file with extension",
     )
+    _ = argparser.add_argument(
+        "-m",
+        "--models_folder",
+        type=Path,
+        default=Path("./models/"),
+        help="Path to folder where model's weights will be saved",
+    )
 
     return argparser
 
@@ -72,7 +79,9 @@ def dedup_logger_output(message: str) -> str:
     return m.group(1) if m else message
 
 
-def run(train_dataset: Path, test_dataset: Path, config: Path) -> Experiment:
+def run(
+    train_dataset: Path, test_dataset: Path, config: Path, save_folder: Path
+) -> Experiment:
     if not venv_exists():
         raise RuntimeError("Create venv")
 
@@ -88,6 +97,8 @@ def run(train_dataset: Path, test_dataset: Path, config: Path) -> Experiment:
             str(test_dataset),
             "-c",
             str(config),
+            "-m",
+            str(save_folder),
         ],
         stderr=subprocess.PIPE,
         text=True,
@@ -104,8 +115,9 @@ def main(arguments: argparse.Namespace) -> None:
     train_dataset = arguments.train_dataset
     test_dataset = arguments.test_dataset or arguments.train_dataset
     config = arguments.config
+    save_folder = arguments.models_folder
 
-    experiment = run(train_dataset, test_dataset, config)
+    experiment = run(train_dataset, test_dataset, config, save_folder)
     try:
         with ExperimentCSVHandler(arguments.output) as output:
             output.writerow(experiment)

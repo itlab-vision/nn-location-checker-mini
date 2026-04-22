@@ -1,5 +1,6 @@
 import argparse
 import logging
+import re
 from pathlib import Path
 from sys import path as sys_path
 
@@ -53,6 +54,13 @@ def create_argparser() -> argparse.ArgumentParser:
         default="train.log",
         help="Name of the log file with extension",
     )
+    _ = argparser.add_argument(
+        "-m",
+        "--models_folder",
+        type=Path,
+        default=Path("./models/"),
+        help="Path to folder where model's weights will be saved",
+    )
 
     return argparser
 
@@ -73,7 +81,19 @@ def format_torchsummary(summary: str) -> str:
     return "\n".join(lines[3:end])
 
 
-def main(train_dataset: Path, test_dataset: Path, config: Path) -> None:
+def create_file_name(save_folder: Path) -> str:
+    model_pattern = re.compile(r"\w+-(\d+)\.pt")
+    last_number = 0
+    for file in save_folder.iterdir():
+        if (match := model_pattern.fullmatch(file.name)) is not None:
+            last_number = max(last_number, int(match.group(1)))
+
+    return f"experiment-{last_number + 1}.pt"
+
+
+def main(
+    train_dataset: Path, test_dataset: Path, config: Path, save_folder: Path
+) -> None:
     cfg = load_config(config)
     train_loader, test_loader = setup_dataloaders(
         (train_dataset, test_dataset),
@@ -115,6 +135,17 @@ def main(train_dataset: Path, test_dataset: Path, config: Path) -> None:
     logger.info(f"Average time per image: {time_metrics.avg_time_per_image():.4f} s")
     logger.info(f"Classification speed: {time_metrics.fps():.4f} images/s")
     logger.info("End of testing")
+    logger.info(f"Save model's weights to {save_folder}")
+    try:
+        if not save_folder.exists():
+            save_folder.mkdir()
+        cfg.network = cfg.network.cpu()
+        file_path = save_folder.joinpath(create_file_name(save_folder))
+        with file_path.open(mode="wb") as weights_file:
+            torch.save(cfg.network.state_dict(), weights_file)
+    except Exception as e:
+        logger.critical(f"Can't write to file {file_path}")
+        logger.exception(e)
 
 
 if __name__ == "__main__":
@@ -124,4 +155,5 @@ if __name__ == "__main__":
     train_dataset = arguments.train_dataset
     test_dataset = arguments.test_dataset or arguments.train_dataset
     config = arguments.config
-    main(train_dataset, test_dataset, config)
+    save_folder = arguments.models_folder
+    main(train_dataset, test_dataset, config, save_folder)
