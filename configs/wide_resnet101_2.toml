@@ -4,7 +4,7 @@ epochs = 1
 target_shape = [224, 224]
 
 [model]
-name = "wide_resnet101_2"
+name = "WIDERESNET_101_2"
 end = 9
 classifier = "../classifiers/default_classifier.json"
 
