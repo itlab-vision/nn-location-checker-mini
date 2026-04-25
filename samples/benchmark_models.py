@@ -103,7 +103,7 @@ def main() -> None:
         logger.info(f"\n=== Running experiment for {model_name} ===")
         try:
             run_experiment(cfg, args, output_csv)
-        except Exception as e:  # noqa: BLE001
+        except Exception as e:
             logger.error(f"Experiment {cfg.name} failed: {e}")
             logger.info("Continuing with next config...")
 
