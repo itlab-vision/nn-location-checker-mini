@@ -82,6 +82,9 @@ class ModelSegment(tnn.Module):
             if self._donor.startswith("densenet"):
                 x = torch.nn.functional.relu(x, inplace=True)
                 x = torch.nn.functional.adaptive_avg_pool2d(x, (1, 1))
+            elif self._donor.startswith("mnasnet"):
+                x = x.mean([2, 3])
+                return self._classifier_layers(x)
             x = torch.flatten(x, 1)
             x = self._classifier_layers(x)
 

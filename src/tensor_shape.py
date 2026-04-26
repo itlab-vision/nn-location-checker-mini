@@ -10,6 +10,7 @@ from typing import NamedTuple, Never, overload
 
 import torch.nn as tnn
 from torchvision.models.densenet import _DenseBlock, _DenseLayer, _Transition
+from torchvision.models.mnasnet import _InvertedResidual
 from torchvision.models.resnet import BasicBlock, Bottleneck
 from torchvision.models.squeezenet import Fire
 
@@ -267,3 +268,22 @@ def _(module: Bottleneck, previous_shape: TensorShape) -> TensorShape:
 def _(module: Fire, previous_shape: TensorShape) -> TensorShape:
     out_channels = module.expand1x1.out_channels + module.expand3x3.out_channels
     return TensorShape(previous_shape.height, previous_shape.width, out_channels)
+
+
+@compute_shape.register
+def _(module: _InvertedResidual, previous_shape: TensorShape) -> TensorShape:
+    stride = next(
+        m.stride[0]
+        for m in module.layers.modules()
+        if isinstance(m, tnn.Conv2d) and m.groups > 1
+    )
+    out_channels = next(
+        m.out_channels
+        for m in reversed(list(module.layers.modules()))
+        if isinstance(m, tnn.Conv2d)
+    )
+    return TensorShape(
+        previous_shape.height // stride,
+        previous_shape.width // stride,
+        out_channels,
+    )
