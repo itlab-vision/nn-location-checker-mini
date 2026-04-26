@@ -11,6 +11,7 @@ from typing import NamedTuple, Never, overload
 import torch.nn as tnn
 from torchvision.models.densenet import _DenseBlock, _DenseLayer, _Transition
 from torchvision.models.resnet import BasicBlock, Bottleneck
+from torchvision.models.shufflenetv2 import InvertedResidual
 from torchvision.models.squeezenet import Fire
 
 __all__ = ["TensorShape", "compute_conv", "compute_shape"]
@@ -103,6 +104,12 @@ def compute_shape(module: Bottleneck, previous_shape: TensorShape) -> TensorShap
 
 @overload
 def compute_shape(module: Fire, previous_shape: TensorShape) -> TensorShape: ...
+
+
+@overload
+def compute_shape(
+    module: InvertedResidual, previous_shape: TensorShape
+) -> TensorShape: ...
 
 
 @overload
@@ -267,3 +274,18 @@ def _(module: Bottleneck, previous_shape: TensorShape) -> TensorShape:
 def _(module: Fire, previous_shape: TensorShape) -> TensorShape:
     out_channels = module.expand1x1.out_channels + module.expand3x3.out_channels
     return TensorShape(previous_shape.height, previous_shape.width, out_channels)
+
+
+def _branch_channels(branch: tnn.Sequential) -> int:
+    for module in reversed(branch):
+        if isinstance(module, tnn.Conv2d):
+            return module.out_channels
+    raise ValueError("No Conv2d was detected in branch")
+
+
+@compute_shape.register
+def _(module: InvertedResidual, previous_shape: TensorShape) -> TensorShape:
+    if module.stride == 1:
+        return previous_shape
+    channels = _branch_channels(module.branch1) + _branch_channels(module.branch2)
+    return TensorShape(previous_shape.height // 2, previous_shape.width // 2, channels)
