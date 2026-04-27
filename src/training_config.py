@@ -35,6 +35,7 @@ class TrainingConfig:
     donor: str
     transform: tt2.Transform
     classifier: Classifier
+    classifier_name: str
     batch_size: int
     epochs: int
     network: ClassificationNetwork
@@ -68,6 +69,9 @@ def load_config(file: Path) -> TrainingConfig:
     classifier = ModuleLoader(model_p["classifier"]).load(output_shape)
     network = ClassificationNetwork(segment, classifier)
 
+    classifier_path = Path(model_p["classifier"])
+    classifier_name = classifier_path.stem
+
     optimizer = getattr(torch.optim, optimizer_p["name"])(
         network.parameters(), lr=optimizer_p["learning_rate"]
     )
@@ -77,6 +81,7 @@ def load_config(file: Path) -> TrainingConfig:
         donor=model_p["name"],
         transform=internals.transform,
         classifier=classifier,
+        classifier_name=classifier_name,
         batch_size=macro_p["batch_size"],
         epochs=macro_p["epochs"],
         network=network,

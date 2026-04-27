@@ -106,6 +106,7 @@ def main(
     logger.info(f"Donor: {cfg.donor}")
     logger.info(f"Segment: {cfg.segment_start}:{cfg.segment_end}")
     logger.info(f"Classifier: {cfg.classifier}")
+    logger.info(f"Classifier name: {cfg.classifier_name}")
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     cfg.network = cfg.network.to(device)

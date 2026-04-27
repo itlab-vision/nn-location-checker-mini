@@ -1,0 +1,16 @@
+[macro_parameters]
+batch_size = 128
+epochs = 1
+target_shape = [224, 224]
+
+[model]
+name = "mnasnet_1_0"
+end = 8
+classifier = "../classifiers/default_classifier.json"
+
+[optimizer]
+name = "SGD"
+learning_rate = 0.01
+
+[loss_function]
+name = "CrossEntropyLoss"
