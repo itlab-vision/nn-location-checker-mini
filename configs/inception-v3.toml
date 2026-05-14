@@ -1,16 +1,18 @@
 [macro_parameters]
-batch_size = 64
+batch_size = 32
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "inception_v3"
+end = 17
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
-name = "SGD"
-lr = 0.01
+name = "RMSprop"
+lr = 0.045
 momentum = 0.9
+alpha = 0.9
+eps = 1.0
 
 [loss_function]
 name = "CrossEntropyLoss"

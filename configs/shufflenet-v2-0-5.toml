@@ -1,15 +1,16 @@
 [macro_parameters]
-batch_size = 64
+batch_size = 1024
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "shufflenet_v2_0_5"
+end = 5
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
 name = "SGD"
-lr = 0.01
+lr = 0.02
+weight_decay = 4e-5
 momentum = 0.9
 
 [loss_function]

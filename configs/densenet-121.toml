@@ -3,14 +3,16 @@ batch_size = 64
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "densenet_121"
+end = 9
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
 name = "SGD"
-lr = 0.01
+lr = 0.1
+weight_decay = 1e-4
 momentum = 0.9
+nesterov = true
 
 [loss_function]
 name = "CrossEntropyLoss"

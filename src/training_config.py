@@ -79,11 +79,14 @@ def load_config(file: Path) -> TrainingConfig:
     network = ClassificationNetwork(segment, classifier)
 
     logger.info("Setup optimizer")
-    optimizer = getattr(torch.optim, optimizer_p["name"])(
-        network.parameters(), lr=optimizer_p["learning_rate"]
+    optimizer_name = optimizer_p.pop("name")
+    optimizer = getattr(torch.optim, optimizer_name)(
+        network.parameters(), **optimizer_p
     )
     logger.info("Setup loss function")
-    loss_fn = getattr(torch.nn, loss_p["name"])()
+
+    loss_name = loss_p.pop("name")
+    loss_fn = getattr(torch.nn, loss_name)(**loss_p)
 
     return TrainingConfig(
         donor=model_p["name"],
@@ -94,7 +97,7 @@ def load_config(file: Path) -> TrainingConfig:
         network=network,
         optimizer=optimizer,
         loss_function=loss_fn,
-        learning_rate=optimizer_p["learning_rate"],
+        learning_rate=optimizer_p["lr"],
         segment_start=segment_start,
         segment_end=segment_end,
         target_shape=target_shape,

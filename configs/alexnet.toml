@@ -1,16 +1,17 @@
 [macro_parameters]
-batch_size = 64
+batch_size = 128
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "AlexNet"
+end = 2
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
 name = "SGD"
 lr = 0.01
 momentum = 0.9
+weight_decay = 0.0005
 
 [loss_function]
 name = "CrossEntropyLoss"

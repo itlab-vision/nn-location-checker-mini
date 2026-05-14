@@ -3,14 +3,15 @@ batch_size = 64
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "mnasnet_1_0"
+end = 1
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
-name = "SGD"
-lr = 0.01
+name = "RMSprop"
+alpha = 0.9
 momentum = 0.9
+weight_decay = 1e-5
 
 [loss_function]
 name = "CrossEntropyLoss"

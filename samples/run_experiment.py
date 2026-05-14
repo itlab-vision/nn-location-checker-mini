@@ -15,13 +15,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def venv_exists() -> bool:
-    project_root = Path(__file__).resolve().parents[1]
-    python_unix = project_root.joinpath(".venv/bin/python")
-    python_win = project_root.joinpath(".venv/Scripts/python.exe")
-    return python_unix.exists() or python_win.exists()
-
-
 def create_argparser() -> argparse.ArgumentParser:
     argparser = argparse.ArgumentParser()
     argparser.add_argument(
@@ -82,9 +75,6 @@ def dedup_logger_output(message: str) -> str:
 def run(
     train_dataset: Path, test_dataset: Path, config: Path, save_folder: Path
 ) -> Experiment:
-    if not venv_exists():
-        raise RuntimeError("Create venv")
-
     experiment = Experiment()
     training_script = Path(__file__).resolve().parent.joinpath("train_model.py")
     with subprocess.Popen(

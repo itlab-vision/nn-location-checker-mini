@@ -39,11 +39,10 @@ epochs = 10
 name = "alexnet"
 end = 2
 classifier = "{classifier_path}"
-image_size = [200, 200]
 
 [optimizer]
 name = "SGD"
-learning_rate = 0.001
+lr = 0.001
 
 [loss_function]
 name = "CrossEntropyLoss"
@@ -113,7 +112,6 @@ def test_load_config_network_is_classificaton_network(valid_config: Path):
 
 def test_load_config_explicit_start(tmp_path: Path, classifier_json: Path):
     content = VALID_TOML_TEMPLATE.format(classifier_path=classifier_json)
-    content += "\nstart = 1\n"
     content = content.replace("[optimizer]", "start = 1\n\n[optimizer]").replace(
         "end = 2\nstart = 1", "start = 1\nend = 2"
     )
@@ -170,7 +168,7 @@ def test_missing_model_end_raises(tmp_path: Path, classifier_json: Path):
 
 def test_missing_learning_rate_raises(tmp_path: Path, classifier_json: Path):
     content = VALID_TOML_TEMPLATE.format(classifier_path=classifier_json).replace(
-        "learning_rate = 0.001\n", ""
+        "lr = 0.001\n", ""
     )
     with pytest.raises(KeyError):
         load_config(write_toml(tmp_path, content))

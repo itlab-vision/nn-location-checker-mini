@@ -1,16 +1,17 @@
 [macro_parameters]
-batch_size = 64
+batch_size = 256
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "squeezenet_1_0"
+end = 13
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
 name = "SGD"
-lr = 0.01
+lr = 0.04
 momentum = 0.9
+weight_decay = 0.0002
 
 [loss_function]
 name = "CrossEntropyLoss"

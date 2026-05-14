@@ -1,15 +1,16 @@
 [macro_parameters]
-batch_size = 64
+batch_size = 128
 epochs = 15
 
 [model]
-name = "googlenet"
-end = 16
+name = "resnext_101_32"
+end = 7
 classifier = "./classifiers/default_classifier.json"
 
 [optimizer]
 name = "SGD"
-lr = 0.01
+lr = 0.1
+weight_decay = 0.0005
 momentum = 0.9
 
 [loss_function]
