@@ -1,8 +1,9 @@
 import argparse
+import datetime
 import logging
-import re
 from pathlib import Path
 from sys import path as sys_path
+from zoneinfo import ZoneInfo
 
 src_directory = Path(__file__).resolve().parents[1].joinpath("src")
 sys_path.append(str(src_directory))
@@ -80,14 +81,9 @@ def format_torchsummary(summary: str) -> str:
     return "\n".join(lines[3:end])
 
 
-def create_file_name(save_folder: Path) -> str:
-    model_pattern = re.compile(r"\w+-(\d+)\.pt")
-    last_number = 0
-    for file in save_folder.iterdir():
-        if (match := model_pattern.fullmatch(file.name)) is not None:
-            last_number = max(last_number, int(match.group(1)))
-
-    return f"experiment-{last_number + 1}.pt"
+def create_file_name(donor_name: str, classifier_name: str) -> str:
+    now = datetime.datetime.now(ZoneInfo("Europe/Moscow"))
+    return f"{donor_name}-{classifier_name}-{now.strftime('%Y_%m_%d-%H:%M:%S')}.pt"
 
 
 def main(
@@ -142,7 +138,9 @@ def main(
         if not save_folder.exists():
             save_folder.mkdir()
         cfg.network = cfg.network.cpu()
-        file_path = save_folder.joinpath(create_file_name(save_folder))
+        file_path = save_folder.joinpath(
+            create_file_name(cfg.donor, cfg.classifier_name)
+        )
         with file_path.open(mode="wb") as weights_file:
             torch.save(cfg.network.state_dict(), weights_file)
     except Exception as e:

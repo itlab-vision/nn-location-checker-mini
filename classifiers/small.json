@@ -1,9 +1,5 @@
 [
   {
-    "type": "dropout",
-    "percent": 0.5
-  },
-  {
     "type": "linear",
     "out": 4096
   },
@@ -15,15 +11,6 @@
   {
     "type": "dropout",
     "percent": 0.5
-  },
-  {
-    "type": "linear",
-    "out": 4096
-  },
-  {
-    "type": "activation",
-    "function": "relu",
-    "inplace": true
   },
   {
     "type": "linear",

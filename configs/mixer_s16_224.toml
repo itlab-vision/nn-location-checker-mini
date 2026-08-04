@@ -1,0 +1,17 @@
+[macro_parameters]
+batch_size = 32
+epochs = 1
+
+[model]
+name = "mixer_s16_224"
+end = 1
+classifier = "./classifiers/small.json"
+
+[optimizer]
+name = "SGD"
+lr = 0.01
+momentum = 0.9
+weight_decay = 0.0005
+
+[loss_function]
+name = "CrossEntropyLoss"

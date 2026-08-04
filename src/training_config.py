@@ -39,6 +39,7 @@ class TrainingConfig:
     donor: str
     transform: tt2.Transform
     classifier: Classifier
+    classifier_name: str
     batch_size: int
     epochs: int
     network: ClassificationNetwork
@@ -70,7 +71,10 @@ def load_config(file: Path) -> TrainingConfig:
     segment_end = model_p["end"]
     logger.info("Cutting off segment of the model")
     segment = ModelSegment(
-        internals.modules, slice(segment_start, segment_end), model_p["name"]
+        internals.modules,
+        slice(segment_start, segment_end),
+        model_p["name"],
+        internals.class_token,
     )
     output_shape = segment.compute_shape(target_shape)
     logger.info("Loading classifier")
@@ -92,6 +96,7 @@ def load_config(file: Path) -> TrainingConfig:
         donor=model_p["name"],
         transform=internals.transform,
         classifier=classifier,
+        classifier_name=Path(model_p["classifier"]).stem,
         batch_size=macro_p["batch_size"],
         epochs=macro_p["epochs"],
         network=network,

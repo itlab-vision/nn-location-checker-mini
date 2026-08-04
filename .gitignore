@@ -213,4 +213,4 @@ logs/
 samples/benchmark_plots.png
 *.csv
 htmlcov/
-models/
+models/*.pt

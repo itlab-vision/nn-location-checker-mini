@@ -14,17 +14,34 @@ from timm.models import FastVit, VisionTransformer
 from torchvision.models.googlenet import InceptionAux as GoogLeNetAux
 from torchvision.models.inception import InceptionAux
 
+from models.vit import (
+    ViTPatch,
+)  # WARNING: This import triggers all compute_shape registrations
 from tensor_shape import TensorShape, compute_shape
 
 
 class ModelSegment(tnn.Module):
     def __init__(
-        self, modules: list[tnn.Module], index: int | slice, donor: str
+        self,
+        modules: list[tnn.Module],
+        index: int | slice,
+        donor: str,
+        class_token: tnn.Parameter | None = None,
     ) -> None:
         super().__init__()
 
         as_slice = slice(index) if isinstance(index, int) else index
         selected_modules = modules[as_slice]
+
+        if donor.startswith("vit_"):
+            if class_token is None:
+                raise ValueError(f"class_token is required for '{donor}'")
+            selected_modules = [
+                ViTPatch(module, class_token)
+                if isinstance(module, tnn.Conv2d)
+                else module
+                for module in selected_modules
+            ]
 
         self._convolution_layers: tnn.Sequential = tnn.Sequential()
         self._classifier_layers: tnn.Sequential = tnn.Sequential()
@@ -60,7 +77,9 @@ class ModelSegment(tnn.Module):
     def append(self, module: tnn.Module) -> None:
         if isinstance(module, (InceptionAux, GoogLeNetAux)):
             return
-        if isinstance(module, tnn.Sequential):
+        if isinstance(module, tnn.ModuleList):
+            self.extend(module)
+        elif isinstance(module, tnn.Sequential):
             if any(isinstance(submodule, tnn.Linear) for submodule in module):
                 self._classifier_layers.append(module)
             else:
@@ -91,6 +110,10 @@ class ModelSegment(tnn.Module):
                 return self._classifier_layers(x)
             elif self._donor == "mobilenet_v2":
                 x = torch.nn.functional.adaptive_avg_pool2d(x, (1, 1))
+            elif self._donor.startswith("vit_"):
+                x = x[:, 0]
+            elif self._donor.startswith("convnext"):
+                return self._classifier_layers(x)
             x = torch.flatten(x, 1)
             x = self._classifier_layers(x)
 

@@ -173,8 +173,8 @@ class ExperimentCSVHandler:
             does not exist; rows are appended on subsequent runs.
         """
         self._path = path
-        self._file: None | IO = None
-        self._writer: None | csv.DictWriter[str] = None
+        self._file: IO | None = None
+        self._writer: csv.DictWriter[str] | None = None
 
     def __enter__(self) -> Self:
         """Open the CSV file and return the handler for use."""

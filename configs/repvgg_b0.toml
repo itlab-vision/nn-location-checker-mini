@@ -1,0 +1,18 @@
+[macro_parameters]
+batch_size = 32
+epochs = 1
+
+[model]
+name = "repvgg_b0"
+end = 2
+classifier = "./classifiers/small.json"
+
+[optimizer]
+name = "SGD"
+lr = 0.1
+nesterov = true
+weight_decay = 0.0005
+momentum = 0.9
+
+[loss_function]
+name = "CrossEntropyLoss"

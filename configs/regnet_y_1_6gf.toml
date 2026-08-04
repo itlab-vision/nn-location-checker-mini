@@ -1,0 +1,16 @@
+[macro_parameters]
+batch_size = 32
+epochs = 1
+
+[model]
+name = "regnet_y_1_6gf"
+end = 2
+classifier = "./classifiers/small.json"
+
+[optimizer]
+name = "AdamW"
+lr = 1e-4
+weight_decay = 1e-2
+
+[loss_function]
+name = "CrossEntropyLoss"
